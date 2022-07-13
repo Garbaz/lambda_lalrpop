@@ -1,0 +1,22 @@
+use lambda_rpop::ast::*;
+
+grammar;
+
+pub Expr : Box<LambdaExpr> = {
+    "\\" <Var> "." <Expr> => Box::new(LambdaExpr::Abstraction(<>)),
+    Expr1,
+};
+
+Expr1 : Box<LambdaExpr> = {
+    <Expr1> <Expr2> => Box::new(LambdaExpr::Application(<>)),
+    Expr2,
+}
+
+Expr2 : Box<LambdaExpr> = {
+    Var => Box::new(LambdaExpr::Variable(<>)),
+    "(" <Expr> ")",
+}
+
+Var : String = {
+    r"[a-zA-Z_]+" => <>.to_string(),
+}
